@@ -1,5 +1,5 @@
-import pytest
 from src.Category import Category
+
 
 class TestCategory:
     """Тесты для класса Category"""
@@ -36,4 +36,3 @@ class TestCategory:
 
         cat2 = Category("Кат 2", "Описание", ["Товар3"])
         assert cat2.product_count == 3
-

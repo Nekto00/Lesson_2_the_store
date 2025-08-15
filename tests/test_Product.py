@@ -1,5 +1,7 @@
 import pytest
+
 from src.Product import Product
+
 
 class TestProduct:
     """Тесты для класса Product"""

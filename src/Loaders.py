@@ -1,7 +1,9 @@
 import json
 from typing import List
+
 from src.Category import Category
 from src.Product import Product
+
 
 class JSONDataLoader:
     """Класс для загрузки данных из JSON файла"""
