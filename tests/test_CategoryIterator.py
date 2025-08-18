@@ -70,8 +70,3 @@ class TestProductAddition:
         """Тест попытки сложения с не-продуктом"""
         with pytest.raises(TypeError, match="Можно складывать только объекты класса Product"):
             _ = sample_products[0] + 100
-
-    def test_addition_different_products(self, sample_products):
-        """Тест попытки сложения разных продуктов"""
-        with pytest.raises(ValueError, match="Можно складывать только продукты с одинаковым названием"):
-            _ = sample_products[0] + sample_products[2]

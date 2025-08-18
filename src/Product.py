@@ -90,20 +90,23 @@ class Product:
     def __add__(self, other):
         """
         Магический метод для сложения продуктов.
-        Возвращает новый продукт с объединенным количеством и средней ценой.
+        Если продукты одинаковые (по названию) - объединяет их.
+        Если разные - возвращает общую стоимость.
         """
         if not isinstance(other, Product):
             raise TypeError("Можно складывать только объекты класса Product")
 
-        if self.name != other.name:
-            raise ValueError("Можно складывать только продукты с одинаковым названием")
+        if self.name == other.name:
+            # Для одинаковых продуктов - объединяем
+            total_quantity = self.quantity + other.quantity
+            average_price = (self.price * self.quantity + other.price * other.quantity) / total_quantity
 
-        total_quantity = self.quantity + other.quantity
-        average_price = (self.price * self.quantity + other.price * other.quantity) / total_quantity
-
-        return Product(
-            name=self.name,
-            description=self.description,
-            price=average_price,
-            quantity=total_quantity
-        )
+            return Product(
+                name=self.name,
+                description=self.description,
+                price=average_price,
+                quantity=total_quantity
+            )
+        else:
+            # Для разных продуктов - возвращаем общую стоимость
+            return self.price * self.quantity + other.price * other.quantity
