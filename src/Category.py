@@ -1,5 +1,5 @@
 from src.Product import Product
-
+from src.CategoryIterator import CategoryIterator
 
 class Category:
     """
@@ -46,3 +46,11 @@ class Category:
     @property
     def product_count(self) -> int:
         return Category.product_total
+
+    def __str__(self) -> str:
+        total_quantity = sum(p.quantity for p in self.__products)
+        return f"{self.name}, количество продуктов: {total_quantity} шт."
+
+    def __iter__(self):
+        """Возвращает итератор для товаров категории"""
+        return CategoryIterator(self)

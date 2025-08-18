@@ -83,3 +83,27 @@ class Product:
 
         # Если дубликатов не найдено, создаем новый товар
         return cls(name, description, price, quantity)
+
+    def __str__(self) -> str:
+        return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
+
+    def __add__(self, other):
+        """
+        Магический метод для сложения продуктов.
+        Возвращает новый продукт с объединенным количеством и средней ценой.
+        """
+        if not isinstance(other, Product):
+            raise TypeError("Можно складывать только объекты класса Product")
+
+        if self.name != other.name:
+            raise ValueError("Можно складывать только продукты с одинаковым названием")
+
+        total_quantity = self.quantity + other.quantity
+        average_price = (self.price * self.quantity + other.price * other.quantity) / total_quantity
+
+        return Product(
+            name=self.name,
+            description=self.description,
+            price=average_price,
+            quantity=total_quantity
+        )
