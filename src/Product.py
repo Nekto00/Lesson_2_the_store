@@ -1,20 +1,85 @@
 class Product:
-    # Атрибуты класса (аннотации типов, необязательные в Python, но полезные для документации)
-    name: str  # Название товара
-    description: str  # Описание товара
-    price: float  # Цена товара (в числовом формате, например, 99.99)
-    quantity: int  # Количество товара в наличии
+    """
+    Класс для представления товара в магазине.
+    """
+    name: str
+    description: str
+    __price: float  # Приватный атрибут цены
+    quantity: int
 
-    def __init__(self, name, description, price, quantity):
+    def __init__(self, name: str, description: str, price: float, quantity: int):
         """
-        Конструктор класса Product. Вызывается при создании нового товара.
+        Конструктор класса Product.
 
-        :param name: Название товара (строка)
-        :param description: Описание товара (строка)
-        :param price: Цена товара (число с плавающей запятой)
-        :param quantity: Количество товара (целое число)
+        :param name: Название товара
+        :param description: Описание товара
+        :param price: Цена товара (должна быть положительной)
+        :param quantity: Количество товара в наличии
         """
-        self.name = name  # Устанавливаем название
-        self.description = description  # Устанавливаем описание
-        self.price = price  # Устанавливаем цену
-        self.quantity = quantity  # Устанавливаем количество
+        self.name = name
+        self.description = description
+        self.__price = 0.0  # Инициализируем нулем
+        self.price = price  # Используем сеттер для установки цены с проверкой
+        self.quantity = quantity
+
+    @property
+    def price(self) -> float:
+        """
+        Геттер для получения цены товара.
+
+        :return: Текущая цена товара
+        """
+        return self.__price
+
+    @price.setter
+    def price(self, new_price: float):
+        """
+        Сеттер для установки цены товара с проверками:
+        1. Цена должна быть положительной
+        2. При понижении цены требует подтверждения
+        """
+        # Проверка на отрицательную или нулевую цену
+        if new_price <= 0:
+            print("Ошибка: Цена не должна быть нулевая или отрицательная")
+            return
+
+        # Проверка на понижение цены
+        if new_price < self.__price:
+            answer = input(f"Вы действительно хотите понизить цену с {self.__price} до {new_price}? (y/n): ")
+            if answer.lower() != 'y':
+                print("Изменение цены отменено")
+                return
+
+        # Если все проверки пройдены, устанавливаем новую цену
+        self.__price = new_price
+        print(f"Цена успешно изменена на {new_price}")
+
+    @classmethod
+    def new_product(cls, product_data: dict, products: list = None):
+        """
+        Класс-метод для создания нового товара или обновления существующего.
+
+        :param product_data: Словарь с параметрами товара
+        :param products: Список существующих товаров для проверки дубликатов
+        :return: Объект класса Product (новый или обновленный)
+        """
+        name = product_data.get('name')
+        description = product_data.get('description')
+        price = float(product_data.get('price'))
+        quantity = int(product_data.get('quantity'))
+
+        # Если передан список товаров, ищем дубликаты
+        if products:
+            for existing_product in products:
+                if existing_product.name.lower() == name.lower():
+                    # Объединяем количество
+                    existing_product.quantity += quantity
+                    # Выбираем максимальную цену
+                    existing_product.price = max(existing_product.price, price)
+                    # Обновляем описание, если оно было изменено
+                    if description:
+                        existing_product.description = description
+                    return existing_product
+
+        # Если дубликатов не найдено, создаем новый товар
+        return cls(name, description, price, quantity)

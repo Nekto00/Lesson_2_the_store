@@ -1,44 +1,48 @@
+from src.Product import Product
+
+
 class Category:
     """
     Класс для представления категории товаров в магазине.
     Содержит общие счетчики для всех категорий и товаров.
     """
-
-    # Атрибуты класса (общие для всех экземпляров)
-    name: str  # Название категории (аннотация типа)
-    description: str  # Описание категории (аннотация типа)
-    products: list  # Список товаров в категории (аннотация типа)
-    category_total = 0  # Счетчик общего количества категорий
-    product_total = 0  # Счетчик общего количества товаров
+    name: str
+    description: str
+    category_total = 0
+    product_total = 0
 
     def __init__(self, name: str, description: str, products: list):
-        """
-        Конструктор класса Category. Инициализирует новую категорию.
-
-        :param name: Название категории
-        :param description: Описание категории
-        :param products: Список товаров в категории
-        """
         self.name = name
         self.description = description
-        self.products = products
+        self.__products = products  # Приватный атрибут
 
-        # Увеличиваем счетчики класса при создании новой категории
-        Category.category_total += 1  # +1 к общему числу категорий
-        Category.product_total += len(products)  # +N к общему числу товаров
+        Category.category_total += 1
+        Category.product_total += len(products)
+
+    @property
+    def products(self):
+        """Геттер для доступа к списку товаров"""
+        return self.__products
+
+    def add_product(self, product):
+        """Метод для добавления товара в категорию"""
+        if not isinstance(product, Product):
+            raise AttributeError("Можно добавлять только объекты класса Product")
+        self.__products.append(product)
+        Category.product_total += 1
+
+    @property
+    def products_info(self) -> str:
+        """Форматированная информация о товарах"""
+        return "\n".join(
+            f"{p.name}, {p.price} руб. Остаток: {p.quantity} шт."
+            for p in self.__products
+        )
 
     @property
     def category_count(self) -> int:
-        """
-        Возвращает общее количество созданных категорий.
-        Это свойство только для чтения.
-        """
         return Category.category_total
 
     @property
     def product_count(self) -> int:
-        """
-        Возвращает общее количество всех товаров во всех категориях.
-        Это свойство только для чтения.
-        """
         return Category.product_total
