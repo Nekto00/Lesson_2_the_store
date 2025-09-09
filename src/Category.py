@@ -20,17 +20,23 @@ class Category:
         Category.category_total += 1
         Category.product_total += len(products)
 
+    def add_product(self, product):
+        """Метод для добавления товара в категорию"""
+        # Проверяем, что объект является экземпляром Product или его подклассов
+        if not isinstance(product, Product):
+            raise TypeError("Можно добавлять только объекты класса Product или его наследников")
+
+        # Дополнительная проверка через issubclass для надежности
+        if not issubclass(type(product), Product):
+            raise TypeError("Можно добавлять только объекты классов, унаследованных от Product")
+
+        self.__products.append(product)
+        Category.product_total += 1
+
     @property
     def products(self):
         """Геттер для доступа к списку товаров"""
         return self.__products
-
-    def add_product(self, product):
-        """Метод для добавления товара в категорию"""
-        if not isinstance(product, Product):
-            raise AttributeError("Можно добавлять только объекты класса Product")
-        self.__products.append(product)
-        Category.product_total += 1
 
     @property
     def products_info(self) -> str:
