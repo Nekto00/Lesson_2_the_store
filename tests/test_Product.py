@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from src.Product import Product, LawnGrass, Smartphone
+from src.Product import LawnGrass, Product, Smartphone
 
 
 class TestProduct:

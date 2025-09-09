@@ -96,7 +96,7 @@ class Product:
             raise TypeError("Можно складывать только объекты класса Product")
 
         # Проверяем, что объекты одного класса
-        if type(self) != type(other):
+        if type(self) is not type(other):
             raise TypeError("Нельзя складывать товары из разных классов продуктов")
 
         # Для продуктов одного класса возвращаем общую стоимость
@@ -109,8 +109,8 @@ class Smartphone(Product):
     Наследуется от класса Product.
     """
 
-    def __init__(self, name: str, description: str, price: float, quantity: int,
-             efficiency: float, model: str, memory: int, color: str):
+    def __init__(self, name: str, description: str, price: float, quantity: int, efficiency: float, model: str,
+                 memory: int, color: str):
         """
         Конструктор класса Smartphone.
 
