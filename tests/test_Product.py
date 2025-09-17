@@ -3,7 +3,6 @@ from unittest.mock import patch
 import pytest
 
 from src.Product import LawnGrass, Product, Smartphone
-from unittest.mock import patch
 
 
 class TestReprMixinFunctionality:
@@ -12,7 +11,6 @@ class TestReprMixinFunctionality:
     def test_repr_mixin_initialization_output(self, capsys):
         """Проверка вывода информации при создании объекта"""
         product = Product("Телефон", "Смартфон", 500.0, 10)
-
         captured = capsys.readouterr()
         assert "Цена успешно изменена на 500.0" in captured.out
         assert "Создан объект класса Product с параметрами:" in captured.out
@@ -28,19 +26,14 @@ class TestReprMixinFunctionality:
         assert "Цена успешно изменена на 90000.0" in captured.out
         assert "Создан объект класса Smartphone с параметрами:" in captured.out
         assert "name='iPhone'" in captured.out
-        # Дополнительные атрибуты могут не отображаться из-за порядка инициализации
-        # Проверяем хотя бы основные
 
     def test_repr_mixin_inheritance_for_lawn_grass(self, capsys):
         """Проверка работы миксина для класса LawnGrass"""
         grass = LawnGrass("Трава", "Газонная", 1500.0, 10, "Россия", 14, "Зеленый")
-
         captured = capsys.readouterr()
         assert "Цена успешно изменена на 1500.0" in captured.out
         assert "Создан объект класса LawnGrass с параметрами:" in captured.out
         assert "name='Трава'" in captured.out
-        # Дополнительные атрибуты могут не отображаться из-за порядка инициализации
-        # Проверяем хотя бы основные
 
     def test_repr_method_for_smartphone_with_attributes(self):
         """Проверка метода __repr__ для Smartphone с дополнительными атрибутами"""
@@ -54,7 +47,6 @@ class TestReprMixinFunctionality:
         assert "memory=256" in repr_str
         assert "color='Синий'" in repr_str
 
-    # Остальные тесты остаются без изменений
 
 class TestProduct:
     """Тесты для класса Product"""
