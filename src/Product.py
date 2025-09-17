@@ -90,23 +90,121 @@ class Product:
     def __add__(self, other):
         """
         Магический метод для сложения продуктов.
-        Если продукты одинаковые (по названию) - объединяет их.
-        Если разные - возвращает общую стоимость.
+        Можно складывать только товары из одинаковых классов.
         """
         if not isinstance(other, Product):
             raise TypeError("Можно складывать только объекты класса Product")
 
+        # Проверяем, что объекты одного класса
+        if type(self) is not type(other):
+            raise TypeError("Нельзя складывать товары из разных классов продуктов")
+
+        # Для продуктов одного класса возвращаем общую стоимость
+        return self.price * self.quantity + other.price * other.quantity
+
+
+class Smartphone(Product):
+    """
+    Класс для представления смартфона в магазине.
+    Наследуется от класса Product.
+    """
+
+    def __init__(self, name: str, description: str, price: float, quantity: int, efficiency: float, model: str,
+                 memory: int, color: str):
+        """
+        Конструктор класса Smartphone.
+
+        :param name: Название товара
+        :param description: Описание товара
+        :param price: Цена товара
+        :param quantity: Количество товара в наличии
+        :param efficiency: Производительность
+        :param model: Модель смартфона
+        :param memory: Объем встроенной памяти (ГБ)
+        :param color: Цвет смартфона
+        """
+        super().__init__(name, description, price, quantity)
+        self.efficiency = efficiency
+        self.model = model
+        self.memory = memory
+        self.color = color
+
+    def str(self) -> str:
+        return (f"{self.name} ({self.model}), {self.price} руб. "
+                f"Память: {self.memory}ГБ, Цвет: {self.color}, "
+                f"Остаток: {self.quantity} шт.")
+
+    def __add__(self, other):
+        if not isinstance(other, Smartphone):
+            raise TypeError("Можно складывать только объекты класса Smartphone")
+
         if self.name == other.name:
-            # Для одинаковых продуктов - объединяем
+            # Для одинаковых смартфонов - объединяем
             total_quantity = self.quantity + other.quantity
             average_price = (self.price * self.quantity + other.price * other.quantity) / total_quantity
 
-            return Product(
+            return Smartphone(
                 name=self.name,
                 description=self.description,
                 price=average_price,
-                quantity=total_quantity
+                quantity=total_quantity,
+                efficiency=self.efficiency,
+                model=self.model,
+                memory=self.memory,
+                color=self.color
             )
         else:
-            # Для разных продуктов - возвращаем общую стоимость
+            # Для разных смартфонов - возвращаем общую стоимость
+            return self.price * self.quantity + other.price * other.quantity
+
+
+class LawnGrass(Product):
+    """
+    Класс для представления газонной травы в магазине.
+    Наследуется от класса Product.
+    """
+
+    def __init__(self, name: str, description: str, price: float, quantity: int,
+                 country: str, germination_period: int, color: str):
+        """
+        Конструктор класса LawnGrass.
+
+        :param name: Название товара
+        :param description: Описание товара
+        :param price: Цена товара
+        :param quantity: Количество товара в наличии
+        :param country: Страна-производитель
+        :param germination_period: Срок прорастания (в днях)
+        :param color: Цвет травы
+        """
+        super().__init__(name, description, price, quantity)
+        self.country = country
+        self.germination_period = germination_period
+        self.color = color
+
+    def __str__(self) -> str:
+        return (f"{self.name}, {self.price} руб. "
+                f"Страна: {self.country}, Срок прорастания: {self.germination_period} дней, "
+                f"Цвет: {self.color}, Остаток: {self.quantity} шт.")
+
+    def __add__(self, other):
+        if not isinstance(other, LawnGrass):
+            raise TypeError("Можно складывать только объекты класса LawnGrass")
+
+        if self.name == other.name:
+            # Для одинаковой газонной травы - объединяем
+            total_quantity = self.quantity + other.quantity
+            average_price = (self.price * self.quantity + other.price * other.quantity) / total_quantity
+
+            return LawnGrass(
+                name=self.name,
+                description=self.description,
+                price=average_price,
+                quantity=total_quantity,
+                country=self.country,
+                germination_period=self.germination_period,
+                color=self.color
+            )
+        else:
+            # Для разной газонной травы - возвращаем общую стоимость
             return self.price * self.quantity + other.price * other.quantity

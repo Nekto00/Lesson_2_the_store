@@ -2,7 +2,7 @@ import pytest
 
 from src.Category import Category
 from src.CategoryIterator import CategoryIterator
-from src.Product import Product
+from src.Product import Product, Smartphone
 
 
 class TestCategoryIteration:
@@ -59,12 +59,31 @@ class TestProductAddition:
             Product("Ноутбук", "Игровой", 50000, 2)
         ]
 
-    def test_product_addition(self, sample_products):
-        """Тест сложения двух одинаковых продуктов"""
-        result = sample_products[0] + sample_products[1]
-        assert result.name == "Телефон"
-        assert result.quantity == 8  # 5 + 3
-        assert result.price == (10000*5 + 8000*3)/8  # Средневзвешенная цена
+    def test_product_addition_same_class(self):
+        """Тест сложения объектов одного класса Product"""
+        product1 = Product("Ноутбук", "Игровой ноутбук", 50000.0, 5)
+        product2 = Product("Ноутбук", "Игровой ноутбук", 60000.0, 3)
+
+        result = product1 + product2
+        expected_total = 50000.0 * 5 + 60000.0 * 3
+        assert result == expected_total
+
+    def test_product_addition_different_names(self):
+        """Тест сложения объектов Product с разными названиями"""
+        product1 = Product("Ноутбук", "Игровой ноутбук", 50000.0, 5)
+        product2 = Product("Мышь", "Беспроводная мышь", 2500.0, 10)
+
+        result = product1 + product2
+        expected_total = 50000.0 * 5 + 2500.0 * 10
+        assert result == expected_total
+
+    def test_product_addition_different_classes_error(self):
+        """Тест ошибки при сложении Product с другим классом"""
+        product = Product("Ноутбук", "Игровой ноутбук", 50000.0, 5)
+        smartphone = Smartphone("iPhone", "Смартфон", 90000.0, 3, 95.5, "15 Pro", 256, "Синий")
+
+        with pytest.raises(TypeError, match="Нельзя складывать товары из разных классов продуктов"):
+            product + smartphone
 
     def test_addition_with_non_product(self, sample_products):
         """Тест попытки сложения с не-продуктом"""

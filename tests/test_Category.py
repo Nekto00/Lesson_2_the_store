@@ -1,7 +1,7 @@
 import pytest
 
 from src.Category import Category
-from src.Product import Product
+from src.Product import LawnGrass, Product, Smartphone
 
 
 class TestCategory:
@@ -133,10 +133,100 @@ class TestCategory:
         invalid_product = "Футбольный мяч"  # Не объект Product
 
         # Действие и проверка
-        with pytest.raises(AttributeError) as exc_info:
+        with pytest.raises(TypeError) as exc_info:
             category.add_product(invalid_product)
 
         # Дополнительная проверка сообщения об ошибке
-        assert "Можно добавлять только объекты класса Product" in str(exc_info.value)
+        assert "Можно добавлять только объекты класса Product или его наследников" in str(exc_info.value)
         assert len(category.products) == 0
         assert category.product_count == 0
+
+    def test_add_valid_product(self, category):
+        """Тест добавления валидного продукта"""
+        product = Product("Ноутбук", "Игровой ноутбук", 50000.0, 5)
+        initial_count = Category.product_total
+
+        category.add_product(product)
+
+        assert len(category.products) == 1
+        assert Category.product_total == initial_count + 1
+        assert category.products[0].name == "Ноутбук"
+
+    def test_add_smartphone(self, category):
+        """Тест добавления смартфона"""
+        smartphone = Smartphone("iPhone", "Смартфон", 90000.0, 3, 95.5, "15 Pro", 256, "Синий")
+        initial_count = Category.product_total
+
+        category.add_product(smartphone)
+
+        assert len(category.products) == 1
+        assert Category.product_total == initial_count + 1
+        assert isinstance(category.products[0], Smartphone)
+
+    def test_add_lawn_grass(self, category):
+        """Тест добавления газонной травы"""
+        grass = LawnGrass("Трава", "Газонная", 1500.0, 10, "Россия", 14, "Зеленый")
+        initial_count = Category.product_total
+
+        category.add_product(grass)
+
+        assert len(category.products) == 1
+        assert Category.product_total == initial_count + 1
+        assert isinstance(category.products[0], LawnGrass)
+
+    def test_add_invalid_object_error(self, category):
+        """Тест ошибки при добавлении невалидного объекта"""
+        with pytest.raises(TypeError, match="Можно добавлять только объекты класса Product или его наследников"):
+            category.add_product("не продукт")
+
+    def test_add_number_error(self, category):
+        """Тест ошибки при добавлении числа"""
+        with pytest.raises(TypeError, match="Можно добавлять только объекты класса Product или его наследников"):
+            category.add_product(123)
+
+    def test_add_list_error(self, category):
+        """Тест ошибки при добавлении списка"""
+        with pytest.raises(TypeError, match="Можно добавлять только объекты класса Product или его наследников"):
+            category.add_product([1, 2, 3])
+
+    def test_add_dict_error(self, category):
+        """Тест ошибки при добавлении словаря"""
+        with pytest.raises(TypeError, match="Можно добавлять только объекты класса Product или его наследников"):
+            category.add_product({"name": "product"})
+
+    def test_add_none_error(self, category):
+        """Тест ошибки при добавлении None"""
+        with pytest.raises(TypeError, match="Можно добавлять только объекты класса Product или его наследников"):
+            category.add_product(None)
+
+    def test_add_product_type_check(self, category):
+        """Тест проверки типа добавляемого продукта"""
+        # Должно работать
+        product = Product("Тест", "Тестовый", 1000, 1)
+        category.add_product(product)
+
+        # Должно вызывать ошибку
+        with pytest.raises(TypeError):
+            category.add_product("invalid")
+
+    def test_add_multiple_products(self, category):
+        """Тест добавления нескольких продуктов"""
+        products = [
+            Product("Ноутбук", "Игровой ноутбук", 50000.0, 5),
+            Smartphone("iPhone", "Смартфон", 90000.0, 3, 95.5, "15 Pro", 256, "Синий"),
+            LawnGrass("Трава", "Газонная", 1500.0, 10, "Россия", 14, "Зеленый")
+        ]
+
+        initial_count = Category.product_total
+
+        for product in products:
+            category.add_product(product)
+
+        assert len(category.products) == 3
+        assert Category.product_total == initial_count + 3
+
+
+@pytest.fixture
+def category():
+    """Фикстура для создания категории с пустым списком продуктов"""
+    return Category("Электроника", "Техника", [])
