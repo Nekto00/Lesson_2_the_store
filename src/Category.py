@@ -30,6 +30,10 @@ class Category:
         if not issubclass(type(product), Product):
             raise TypeError("Можно добавлять только объекты классов, унаследованных от Product")
 
+        # Проверка на нулевое количество
+        if product.quantity == 0:
+            raise ValueError("Товар с нулевым количеством не может быть добавлен")
+
         self.__products.append(product)
         Category.product_total += 1
 
@@ -53,6 +57,16 @@ class Category:
     @property
     def product_count(self) -> int:
         return Category.product_total
+
+    def middle_price(self) -> float:
+        """Метод для подсчета среднего ценника всех товаров в категории"""
+        try:
+            total_price = sum(product.price for product in self.__products)
+            average = total_price / len(self.__products)
+            return average
+        except ZeroDivisionError:
+            # Обработка случая, когда в категории нет товаров
+            return 0
 
     def __str__(self) -> str:
         total_quantity = sum(p.quantity for p in self.__products)

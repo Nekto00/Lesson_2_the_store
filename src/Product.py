@@ -55,6 +55,10 @@ class BaseProduct(ABC):
         self.price = price  # Используем сеттер для проверки
         self.quantity = quantity
 
+        # Проверка на нулевое количество
+        if self.quantity == 0:
+            raise ValueError("Товар с нулевым количеством не может быть добавлен")
+
     @property
     @abstractmethod
     def price(self) -> float:
