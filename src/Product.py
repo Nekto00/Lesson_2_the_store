@@ -1,11 +1,101 @@
-class Product:
+from abc import ABC, abstractmethod
+from typing import Any
+
+
+class ReprMixin:
+    """
+    Миксин для логирования создания объектов и красивого строкового представления.
+    """
+
+    def __init__(self, *args, **kwargs):
+        """
+        Конструктор миксина, который логирует создание объекта.
+        """
+        super().__init__(*args, **kwargs)
+        # Логируем создание объекта
+        print(f"Создан объект класса {self.__class__.__name__} с параметрами:")
+        print(f"  {self.__repr__()}")
+
+    def __repr__(self) -> str:
+        """
+        Возвращает строковое представление объекта для отладки.
+        """
+        # Получаем все атрибуты объекта
+        attributes = []
+        for attr_name in dir(self):
+            if not attr_name.startswith('_') and not callable(getattr(self, attr_name)):
+                attr_value = getattr(self, attr_name)
+                attributes.append(f"{attr_name}={repr(attr_value)}")
+
+        # Формируем строку
+        class_name = self.__class__.__name__
+        params = ", ".join(attributes)
+        return f"{class_name}({params})"
+
+
+class BaseProduct(ABC):
+    """
+    Абстрактный базовый класс для всех продуктов.
+    Определяет общий интерфейс и функциональность.
+    """
+
+    @abstractmethod
+    def __init__(self, name: str, description: str, price: float, quantity: int):
+        """
+        Абстрактный конструктор продукта.
+
+        :param name: Название товара
+        :param description: Описание товара
+        :param price: Цена товара
+        :param quantity: Количество товара в наличии
+        """
+        self.name = name
+        self.description = description
+        self.__price = 0.0
+        self.price = price  # Используем сеттер для проверки
+        self.quantity = quantity
+
+    @property
+    @abstractmethod
+    def price(self) -> float:
+        """Абстрактный геттер для получения цены товара."""
+        pass
+
+    @price.setter
+    @abstractmethod
+    def price(self, new_price: float):
+        """Абстрактный сеттер для установки цены товара."""
+        pass
+
+    @classmethod
+    @abstractmethod
+    def new_product(cls, product_data: dict, products: list = None) -> Any:
+        """
+        Абстрактный класс-метод для создания нового товара.
+
+        :param product_data: Словарь с параметрами товара
+        :param products: Список существующих товаров
+        :return: Объект продукта
+        """
+        pass
+
+    @abstractmethod
+    def __str__(self) -> str:
+        """Абстрактный метод для строкового представления продукта."""
+        pass
+
+    @abstractmethod
+    def __add__(self, other) -> Any:
+        """Абстрактный метод для сложения продуктов."""
+        pass
+
+
+# Обратите внимание на порядок наследования: миксин идет первым!
+class Product(ReprMixin, BaseProduct):
     """
     Класс для представления товара в магазине.
+    Наследуется от миксина ReprMixin и абстрактного класса BaseProduct.
     """
-    name: str
-    description: str
-    __price: float  # Приватный атрибут цены
-    quantity: int
 
     def __init__(self, name: str, description: str, price: float, quantity: int):
         """
@@ -16,11 +106,8 @@ class Product:
         :param price: Цена товара (должна быть положительной)
         :param quantity: Количество товара в наличии
         """
-        self.name = name
-        self.description = description
-        self.__price = 0.0  # Инициализируем нулем
-        self.price = price  # Используем сеттер для установки цены с проверкой
-        self.quantity = quantity
+        # Вызываем конструкторы родителей в правильном порядке
+        super().__init__(name, description, price, quantity)
 
     @property
     def price(self) -> float:
@@ -29,7 +116,7 @@ class Product:
 
         :return: Текущая цена товара
         """
-        return self.__price
+        return self._BaseProduct__price
 
     @price.setter
     def price(self, new_price: float):
@@ -44,14 +131,15 @@ class Product:
             return
 
         # Проверка на понижение цены
-        if new_price < self.__price:
-            answer = input(f"Вы действительно хотите понизить цену с {self.__price} до {new_price}? (y/n): ")
+        if hasattr(self, '_BaseProduct__price') and new_price < self._BaseProduct__price:
+            answer = input(
+                f"Вы действительно хотите понизить цену с {self._BaseProduct__price} до {new_price}? (y/n): ")
             if answer.lower() != 'y':
                 print("Изменение цены отменено")
                 return
 
         # Если все проверки пройдены, устанавливаем новую цену
-        self.__price = new_price
+        self._BaseProduct__price = new_price
         print(f"Цена успешно изменена на {new_price}")
 
     @classmethod
@@ -129,7 +217,7 @@ class Smartphone(Product):
         self.memory = memory
         self.color = color
 
-    def str(self) -> str:
+    def __str__(self) -> str:
         return (f"{self.name} ({self.model}), {self.price} руб. "
                 f"Память: {self.memory}ГБ, Цвет: {self.color}, "
                 f"Остаток: {self.quantity} шт.")
