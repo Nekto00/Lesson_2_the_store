@@ -230,3 +230,122 @@ class TestCategory:
 def category():
     """Фикстура для создания категории с пустым списком продуктов"""
     return Category("Электроника", "Техника", [])
+
+
+class TestCategoryMiddlePrice:
+    """Тесты для метода middle_price класса Category"""
+
+    def test_middle_price_with_products(self):
+        """Тест расчета средней цены при наличии товаров"""
+        # Arrange
+        products = [
+            Product("Телефон", "Смартфон", 50000, 10),
+            Product("Ноутбук", "Игровой", 100000, 5),
+            Product("Планшет", "Графический", 75000, 8)
+        ]
+        category = Category("Электроника", "Техника", products)
+
+        # Act
+        result = category.middle_price()
+
+        # Assert
+        expected = (50000 + 100000 + 75000) / 3
+        assert result == expected
+
+    def test_middle_price_single_product(self):
+        """Тест расчета средней цены при одном товаре"""
+        # Arrange
+        products = [Product("Телефон", "Смартфон", 50000, 10)]
+        category = Category("Электроника", "Техника", products)
+
+        # Act
+        result = category.middle_price()
+
+        # Assert
+        assert result == 50000
+
+    def test_middle_price_empty_category(self):
+        """Тест расчета средней цены при пустой категории"""
+        # Arrange
+        category = Category("Книги", "Литература", [])
+
+        # Act
+        result = category.middle_price()
+
+        # Assert
+        assert result == 0
+
+    def test_middle_price_after_adding_products(self):
+        """Тест расчета средней цены после добавления товаров"""
+        # Arrange
+        category = Category("Электроника", "Техника", [])
+
+        # Act & Assert - проверка пустой категории
+        assert category.middle_price() == 0
+
+        # Добавляем товары
+        product1 = Product("Телефон", "Смартфон", 50000, 10)
+        product2 = Product("Ноутбук", "Игровой", 100000, 5)
+        category.add_product(product1)
+        category.add_product(product2)
+
+        # Проверяем среднюю цену после добавления
+        result = category.middle_price()
+        expected = (50000 + 100000) / 2
+        assert result == expected
+
+    def test_middle_price_zero_price_products(self):
+        """Тест расчета средней цены с товарами с нулевой ценой"""
+        # Arrange
+        products = [
+            Product("Бесплатный товар", "Акционный", 0, 100),
+            Product("Платный товар", "Обычный", 1000, 10)
+        ]
+        category = Category("Акционные товары", "Скидки", products)
+
+        # Act
+        result = category.middle_price()
+
+        # Assert
+        expected = (0 + 1000) / 2
+        assert result == expected
+
+    def test_middle_price_identical_prices(self):
+        """Тест расчета средней цены с одинаковыми ценами"""
+        # Arrange
+        products = [
+            Product("Товар 1", "Описание 1", 1000, 5),
+            Product("Товар 2", "Описание 2", 1000, 5),
+            Product("Товар 3", "Описание 3", 1000, 5)
+        ]
+        category = Category("Одинаковые цены", "Тест", products)
+
+        # Act
+        result = category.middle_price()
+
+        # Assert
+        assert result == 1000
+
+
+class TestProductZeroQuantity:
+    """Тесты для проверки создания товара с нулевым количеством"""
+
+    def test_create_product_with_zero_quantity(self):
+        """Тест создания товара с нулевым количеством (должен вызывать ValueError)"""
+        # Arrange & Act & Assert
+        with pytest.raises(ValueError) as exc_info:
+            Product("Телефон", "Смартфон", 50000, 0)
+
+        # Проверяем текст сообщения об ошибке
+        assert str(exc_info.value) == "Товар с нулевым количеством не может быть добавлен"
+
+    def test_create_product_with_positive_quantity(self):
+        """Тест создания товара с положительным количеством (должен работать нормально)"""
+        # Arrange & Act
+        product = Product("Телефон", "Смартфон", 50000, 10)
+
+        # Assert
+        assert product.name == "Телефон"
+        assert product.description == "Смартфон"
+        assert product.price == 50000
+        assert product.quantity == 10

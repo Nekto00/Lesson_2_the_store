@@ -222,3 +222,17 @@ class TestSmartphoneFunctionality:
 
         with pytest.raises(TypeError, match="Можно складывать только объекты класса Smartphone"):
             smartphone + product
+
+
+class TestProductZeroQuantityValidation:
+    """Тесты валидации нулевого количества в классе Product"""
+
+    def test_product_creation_with_zero_quantity_raises_error(self):
+        """Тест: создание товара с quantity=0 вызывает ValueError"""
+        with pytest.raises(ValueError, match="Товар с нулевым количеством не может быть добавлен"):
+            Product("Test Product", "Test Description", 100.0, 0)
+
+    def test_product_creation_with_positive_quantity_success(self):
+        """Тест: создание товара с quantity>0 проходит успешно"""
+        product = Product("Test Product", "Test Description", 100.0, 5)
+        assert product.quantity == 5
