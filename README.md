@@ -26,4 +26,3 @@ pip install -r requirements.txt
 - **Category-тесты**: `tests/test_Category.py
 - **Loaders-тесты**: `tests/test_Loaders.py
 - **CategoryIterator-тесты**: `tests/test_CategoryIterator.py
-- 
